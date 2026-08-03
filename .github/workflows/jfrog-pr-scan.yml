@@ -44,7 +44,7 @@ jobs:
       # install first so one exists on disk for the scan to read.
       - name: "Install dependencies (no committed lock files)"
         run: |
-          jf npm install --package-lock-only
+          jf npm install --package-lock-only --ignore-scripts
           cd frontend
           jf npm install --package-lock-only
 

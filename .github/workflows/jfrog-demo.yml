@@ -46,7 +46,7 @@ jobs:
       # the resolution itself goes through Artifactory too.
       - name: "Install dependencies (no committed lock files)"
         run: |
-          jf npm install --package-lock-only
+          jf npm install --package-lock-only --ignore-scripts
           cd frontend
           jf npm install --package-lock-only
 
