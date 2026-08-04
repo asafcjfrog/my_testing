@@ -17,53 +17,7 @@ env:
   JFROG_NPM_REPO: npm-forrester-ads-virtual
 
 jobs:
-  frogbot-scan:
-    runs-on: ubuntu-latest
-    environment: frogbot
-    permissions:
-      contents: write
-      pull-requests: write
-      security-events: write
-    steps:
-      - name: "Checkout code"
-        uses: actions/checkout@v5
-
-      - name: "Setup JFrog CLI"
-        uses: jfrog/setup-jfrog-cli@deda456d982fc5e9a7a020b63eb0d2968aedd33e #v5.1.0
-        env:
-          JF_URL: ${{ secrets.JF_URL }}
-          JF_USER: ${{ secrets.JF_USER }}
-          JF_PASSWORD: ${{ secrets.JF_PASSWORD }}
-
-      - name: "Configure npm to resolve through Artifactory"
-        run: |
-          jf npm-config --repo-resolve="$JFROG_NPM_REPO"
-          cd frontend
-          jf npm-config --repo-resolve="$JFROG_NPM_REPO"
-
-      # Same reason as in jfrog-pr-scan.yml: no committed lock files, so
-      # generate one for Frogbot's SCA scan to resolve against - via jf so
-      # the resolution itself goes through Artifactory too.
-      - name: "Install dependencies (no committed lock files)"
-        run: |
-          jf npm install --package-lock-only --ignore-scripts
-          cd frontend
-          jf npm install --package-lock-only
-
-      # Triggered outside a pull_request event, so this runs Frogbot's
-      # "scan repository" mode against the checked-out branch: it fails the
-      # job on policy violations (the same "high or above" gate as the PR
-      # scan) and, if fixable issues are found, opens automated fix PRs
-      # against this repo. Expect that side effect during the demo.
-      - name: "Frogbot Scan Repository"
-        uses: jfrog/frogbot@v3
-        env:
-          JF_URL: ${{ secrets.JF_URL }}
-          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
-          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   build-and-publish:
-    needs: frogbot-scan
     runs-on: ubuntu-latest
     steps:
       - name: "Check out Git repository"
