@@ -26,28 +26,6 @@ jobs:
       - name: "Checkout code"
         uses: actions/checkout@v5
 
-      - name: "Setup JFrog CLI"
-        uses: jfrog/setup-jfrog-cli@deda456d982fc5e9a7a020b63eb0d2968aedd33e #v5.1.0
-        env:
-          JF_URL: ${{ secrets.JF_URL }}
-          JF_USER: ${{ secrets.JF_USER }}
-          JF_PASSWORD: ${{ secrets.JF_PASSWORD }}
-
-      - name: "Configure npm to resolve through Artifactory"
-        run: |
-          jf npm-config --repo-resolve="$JFROG_NPM_REPO"
-          cd frontend
-          jf npm-config --repo-resolve="$JFROG_NPM_REPO"
-
-      # Juice Shop doesn't commit package-lock.json in either the root or
-      # frontend/ package, so Frogbot's SCA scan has no lockfile to resolve -
-      # install first so one exists on disk for the scan to read.
-      - name: "Install dependencies (no committed lock files)"
-        run: |
-          jf npm install --package-lock-only --ignore-scripts
-          cd frontend
-          jf npm install --package-lock-only
-
       - name: "Frogbot Scan Pull Request"
         uses: jfrog/frogbot@v3
         env:
