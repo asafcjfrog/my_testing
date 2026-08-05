@@ -7,7 +7,8 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - demo
+      - master
+      - main
 
 env:
   BUILD_NAME: asafc_my_testing
