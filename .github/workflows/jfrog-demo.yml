@@ -1,4 +1,4 @@
-name: "JFrog Demo Build"
+name: "JFrog juice-shop Demo Build"
 
 # Dedicated build for the Forrester demo. Kept separate from release.yml on purpose:
 # that pipeline is OWASP's real release process (tag-triggered, pushes to the
@@ -11,7 +11,7 @@ on:
       - main
 
 env:
-  BUILD_NAME: asafc_my_testing
+  BUILD_NAME: asafc-juice-shop
   # Both are virtual repos with a Default Deployment Repository configured
   # (a local behind each one) - jf npm publish / jf docker push land there.
   JFROG_DOCKER_REPO: docker-forrester-ads-virtual
