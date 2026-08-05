@@ -29,6 +29,13 @@ export function allOrders () {
   }
 }
 
+export function orderHistoryById () {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const order = await ordersCollection.findOne({ _id: req.params.id })
+    res.status(200).json({ status: 'success', data: order })
+  }
+}
+
 export function toggleDeliveryStatus () {
   return async (req: Request, res: Response, next: NextFunction) => {
     const deliveryStatus = !req.body.deliveryStatus

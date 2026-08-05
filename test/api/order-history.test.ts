@@ -49,6 +49,34 @@ void describe('/rest/order-history', () => {
   })
 })
 
+void describe('/rest/order-history/:id', () => {
+  void it('GET order by object id does not verify ownership', async () => {
+    const { token: adminToken } = await login(app, {
+      email: 'admin@' + config.get<string>('application.domain'),
+      password: 'admin123'
+    })
+
+    const adminOrderHistory = await request(app)
+      .get('/rest/order-history')
+      .set({ Authorization: 'Bearer ' + adminToken, 'content-type': 'application/json' })
+
+    const adminOrderId = adminOrderHistory.body.data[0]._id
+
+    const { token: customerToken } = await login(app, {
+      email: 'jim@' + config.get<string>('application.domain'),
+      password: 'ncc-1701'
+    })
+
+    const res = await request(app)
+      .get('/rest/order-history/' + adminOrderId)
+      .set({ Authorization: 'Bearer ' + customerToken, 'content-type': 'application/json' })
+
+    assert.equal(res.status, 200)
+    assert.equal(res.body.status, 'success')
+    assert.equal(res.body.data._id, adminOrderId)
+  })
+})
+
 void describe('/rest/order-history/orders', () => {
   void it('GET all orders is forbidden for customers', async () => {
     const { token } = await login(app, {
