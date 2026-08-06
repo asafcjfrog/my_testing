@@ -133,3 +133,35 @@ void describe('/rest/order-history/:id/delivery-status', () => {
     assert.equal(res.status, 200)
   })
 })
+
+void describe('/rest/order-history/:id', () => {
+  void it('GET own order by id', async () => {
+    const { token } = await login(app, {
+      email: 'admin@' + config.get<string>('application.domain'),
+      password: 'admin123'
+    })
+
+    const res = await request(app)
+      .get('/rest/order-history/1')
+      .set({ Authorization: 'Bearer ' + token, 'content-type': 'application/json' })
+
+    assert.equal(res.status, 200)
+    assert.equal(res.body.status, 'success')
+    assert.equal(res.body.data?._id, 1)
+  })
+
+  void it('GET order by id allows access without ownership check', async () => {
+    const { token } = await login(app, {
+      email: 'jim@' + config.get<string>('application.domain'),
+      password: 'ncc-1701'
+    })
+
+    const res = await request(app)
+      .get('/rest/order-history/1')
+      .set({ Authorization: 'Bearer ' + token, 'content-type': 'application/json' })
+
+    assert.equal(res.status, 200)
+    assert.equal(res.body.status, 'success')
+    assert.equal(res.body.data?._id, 1)
+  })
+})

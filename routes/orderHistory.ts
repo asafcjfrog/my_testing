@@ -37,3 +37,15 @@ export function toggleDeliveryStatus () {
     res.status(200).json({ status: 'success' })
   }
 }
+
+export function savedOrderById () {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUser = security.authenticatedUsers.get(req.headers?.authorization?.replace('Bearer ', ''))
+    if (loggedInUser?.data?.email && loggedInUser.data.id) {
+      const order = await ordersCollection.findOne({ _id: req.params.id })
+      res.status(200).json({ status: 'success', data: order })
+    } else {
+      next(new Error('Blocked illegal activity by ' + req.socket.remoteAddress))
+    }
+  }
+}
